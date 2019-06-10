@@ -1,0 +1,989 @@
+swagger: '2.0'
+info:
+  title: '127.0.0.1:9000'
+  version: 2.4.3+2c41897
+host: 'graylog:9000'
+basePath: /api
+schemes:
+  - http
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
+paths:
+  /search/universal/absolute:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Timerange start. See description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Maximum number of messages to return.
+          in: query
+          name: limit
+          required: false
+          type: integer
+        - description: Offset
+          in: query
+          name: offset
+          required: false
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Comma separated list of fields to return
+          in: query
+          name: fields
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: sort
+          required: false
+          type: string
+        - default: true
+          description: Run decorators on search result
+          in: query
+          name: decorate
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/SearchResponse'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/absolute
+      description: 'Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss.'
+      operationId: searchAbsolute
+      summary: Message search with absolute timerange.
+  /search/universal/absolute/export:
+    get:
+      produces:
+        - text/csv
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Timerange start. See description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Maximum number of messages to return.
+          in: query
+          name: limit
+          required: false
+          type: integer
+        - description: Offset
+          in: query
+          name: offset
+          required: false
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Comma separated list of fields to return
+          in: query
+          name: fields
+          required: true
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/absolute
+      description: 'Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss.'
+      operationId: exportSearchAbsoluteChunked
+      summary: Export message search with absolute timerange.
+  /search/universal/absolute/fieldhistogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Field of whose values to get the histogram of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: true
+          type: string
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Calculate the cardinality of the field as well
+          in: query
+          name: cardinality
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/HistogramResult'
+        '400':
+          description: Field is not of numeric type.
+      tags:
+        - search/universal/absolute
+      operationId: fieldHistogramAbsolute
+      summary: Field value histogram of a query using an absolute timerange.
+  /search/universal/absolute/histogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: true
+          type: string
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/HistogramResult'
+        '400':
+          description: Invalid interval provided.
+      tags:
+        - search/universal/absolute
+      operationId: histogramAbsolute
+      summary: Datetime histogram of a query using an absolute timerange.
+  /search/universal/absolute/stats:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of numeric type to return statistics for
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/FieldStatsResult'
+        '400':
+          description: Field is not of numeric type.
+      tags:
+        - search/universal/absolute
+      description: Returns statistics like min/max or standard deviation of numeric fields over the whole query result set.
+      operationId: statsAbsolute
+      summary: Field statistics for a query using an absolute timerange.
+  /search/universal/absolute/terms:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Fields to stack
+          in: query
+          name: stacked_fields
+          required: false
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: false
+          type: integer
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: order
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/absolute
+      operationId: termsAbsolute
+      summary: Most common field terms of a query using an absolute timerange.
+  /search/universal/absolute/terms-histogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Fields to stack
+          in: query
+          name: stacked_fields
+          required: false
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: true
+          type: integer
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: order
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsHistogramResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/absolute
+      operationId: termsHistogramAbsolute
+      summary: Most common field terms of a query over time using an absolute timerange.
+  /search/universal/absolute/termsstats:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: key_field
+          required: true
+          type: string
+        - description: Value field used for computation
+          in: query
+          name: value_field
+          required: true
+          type: string
+        - description: 'What to order on (Allowed values: TERM, REVERSE_TERM, COUNT, REVERSE_COUNT, TOTAL, REVERSE_TOTAL, MIN, REVERSE_MIN, MAX, REVERSE_MAX, MEAN, REVERSE_MEAN)'
+          in: query
+          name: order
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: false
+          type: integer
+        - description: Timerange start. See search method description for date format
+          in: query
+          name: from
+          required: true
+          type: string
+        - description: Timerange end. See search method description for date format
+          in: query
+          name: to
+          required: true
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsStatsResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/absolute
+      operationId: termsStatsAbsolute
+      summary: Ordered field terms of a query computed on another field using an absolute timerange.
+  /search/universal/relative:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Relative timeframe to search in. See method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Maximum number of messages to return.
+          in: query
+          name: limit
+          required: false
+          type: integer
+        - description: Offset
+          in: query
+          name: offset
+          required: false
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Comma separated list of fields to return
+          in: query
+          name: fields
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: sort
+          required: false
+          type: string
+        - default: true
+          description: Run decorators on search result
+          in: query
+          name: decorate
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/SearchResponse'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      description: 'Search for messages in a relative timerange, specified as seconds from now. Example: 300 means search from 5 minutes ago to now.'
+      operationId: searchRelative
+      summary: Message search with relative timerange.
+  /search/universal/relative/export:
+    get:
+      produces:
+        - text/csv
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Relative timeframe to search in. See method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Maximum number of messages to return.
+          in: query
+          name: limit
+          required: false
+          type: integer
+        - description: Offset
+          in: query
+          name: offset
+          required: false
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Comma separated list of fields to return
+          in: query
+          name: fields
+          required: true
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      description: 'Search for messages in a relative timerange, specified as seconds from now. Example: 300 means search from 5 minutes ago to now.'
+      operationId: exportSearchRelativeChunked
+      summary: Export message search with relative timerange.
+  /search/universal/relative/fieldhistogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Field of whose values to get the histogram of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: true
+          type: string
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: Calculate the cardinality of the field as well
+          in: query
+          name: cardinality
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/HistogramResult'
+        '400':
+          description: Field is not of numeric type.
+      tags:
+        - search/universal/relative
+      operationId: fieldHistogramRelative
+      summary: Field value histogram of a query using a relative timerange.
+  /search/universal/relative/histogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: true
+          type: string
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/HistogramResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      operationId: histogramRelative
+      summary: Datetime histogram of a query using a relative timerange.
+  /search/universal/relative/stats:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of numeric type to return statistics for
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/FieldStatsResult'
+        '400':
+          description: Field is not of numeric type.
+      tags:
+        - search/universal/relative
+      description: Returns statistics like min/max or standard deviation of numeric fields over the whole query result set.
+      operationId: statsRelative
+      summary: Field statistics for a query using a relative timerange.
+  /search/universal/relative/terms:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Fields to stack
+          in: query
+          name: stacked_fields
+          required: false
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: false
+          type: integer
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: order
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      operationId: termsRelative
+      summary: Most common field terms of a query using a relative timerange.
+  /search/universal/relative/terms-histogram:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: field
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Fields to stack
+          in: query
+          name: stacked_fields
+          required: false
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: true
+          type: integer
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: 'Histogram interval / bucket size. (year, quarter, month, week, day, hour or minute)'
+          in: query
+          name: interval
+          required: false
+          type: string
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+        - description: 'Sorting (field:asc / field:desc)'
+          in: query
+          name: order
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsHistogramResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      operationId: termsHistogramRelative
+      summary: Most common field terms of a query over time using a relative timerange.
+  /search/universal/relative/termsstats:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Message field of to return terms of
+          in: query
+          name: key_field
+          required: true
+          type: string
+        - description: Value field used for computation
+          in: query
+          name: value_field
+          required: true
+          type: string
+        - description: 'What to order on (Allowed values: TERM, REVERSE_TERM, COUNT, REVERSE_COUNT, TOTAL, REVERSE_TOTAL, MIN, REVERSE_MIN, MAX, REVERSE_MAX, MEAN, REVERSE_MEAN)'
+          in: query
+          name: order
+          required: true
+          type: string
+        - description: Query (Lucene syntax)
+          in: query
+          name: query
+          required: true
+          type: string
+        - description: Maximum number of terms to return
+          in: query
+          name: size
+          required: false
+          type: integer
+        - description: Relative timeframe to search in. See search method description.
+          in: query
+          name: range
+          required: true
+          type: integer
+        - description: Filter
+          in: query
+          name: filter
+          required: false
+          type: string
+      responses:
+        '200':
+          description: No response was specified
+          schema:
+            $ref: '#/definitions/TermsStatsResult'
+        '400':
+          description: Invalid timerange parameters provided.
+      tags:
+        - search/universal/relative
+      operationId: termsStatsRelative
+      summary: Ordered field terms of a query computed on another field using a relative timerange.
+
+definitions:
+  FieldStatsResult:
+    properties:
+      built_query:
+        type: string
+      cardinality:
+        type: integer
+      count:
+        type: integer
+      max:
+        type: number
+      mean:
+        type: number
+      min:
+        type: number
+      std_deviation:
+        type: number
+      sum:
+        type: number
+      sum_of_squares:
+        type: number
+      time:
+        type: integer
+      variance:
+        type: number
+  HistogramResult:
+    properties:
+      built_query:
+        type: string
+      interval:
+        type: string
+      queried_timerange:
+        properties:
+          from:
+            format: date-time
+            type: string
+          to:
+            format: date-time
+            type: string
+        type: object
+      results:
+        type: object
+      time:
+        type: integer
+  SearchResponse:
+    properties:
+      built_query:
+        type: string
+      decoration_stats:
+        properties:
+          added_fields:
+            items:
+              type: string
+            type: array
+          changed_fields:
+            items:
+              type: string
+            type: array
+          removed_fields:
+            items:
+              type: string
+            type: array
+        type: object
+      fields:
+        items:
+          type: string
+        type: array
+      from:
+        format: date-time
+        type: string
+      messages:
+        items:
+          properties:
+            decoration_stats:
+              properties:
+                added_fields:
+                  type: object
+                changed_fields:
+                  type: object
+                removed_fields:
+                  type: object
+              type: object
+            highlight_ranges:
+              type: object
+            index:
+              type: string
+            message:
+              type: object
+          type: object
+        type: array
+      query:
+        type: string
+      time:
+        type: integer
+      to:
+        format: date-time
+        type: string
+      total_results:
+        type: integer
+      used_indices:
+        items:
+          properties:
+            begin:
+              format: date-time
+              type: string
+            calculated_at:
+              format: date-time
+              type: string
+            end:
+              format: date-time
+              type: string
+            index_name:
+              type: string
+            took_ms:
+              type: integer
+          type: object
+        type: array
+  TermsHistogramResult:
+    properties:
+      buckets:
+        type: object
+      built_query:
+        type: string
+      interval:
+        type: string
+      queried_timerange:
+        properties:
+          from:
+            format: date-time
+            type: string
+          to:
+            format: date-time
+            type: string
+        type: object
+      size:
+        type: integer
+      terms:
+        items:
+          type: string
+        type: array
+      time:
+        type: integer
+  TermsResult:
+    properties:
+      built_query:
+        type: string
+      missing:
+        type: integer
+      other:
+        type: integer
+      terms:
+        type: object
+      terms_mapping:
+        type: object
+      time:
+        type: integer
+      total:
+        type: integer
+  TermsStatsResult:
+    properties:
+      built_query:
+        type: string
+      terms:
+        items:
+          type: object
+        type: array
+      time:
+        type: integer
+tags:
+  - description: Message search
+    name: search/universal/absolute
+  - description: Message search
+    name: search/universal/relative
+
